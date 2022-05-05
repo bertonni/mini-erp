@@ -20,7 +20,7 @@ export default function ViewProduct() {
 
   const handleKeyDown = (e) => {
     if (e.code === "ControlLeft" || e.code === "KeyJ" || e.code === "Enter") {
-      if (e.code === "KeyJ") {
+      if (e.code === "KeyJ" || e.code === "Enter") {
         setShowData(true);
         e.target.select();
       }

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import ProductOutput from "./components/ProductOutput";
 import ProductRegister from "./components/ProductRegister";
 import ViewProduct from "./components/ViewProduct";
 
@@ -20,6 +21,12 @@ function App() {
         >
           Visualizar
         </button>
+        <button
+          className={`transition-all px-4 py-1 border-b-2 ${selectedTab === 3 ? 'border-sky-400' : 'border-transparent'}`}
+          onClick={() => setSelectedTab(3)}
+        >
+          Saída
+        </button>
       </div>
       <div className="w-full flex justify-center">
         {selectedTab === 1 && (
@@ -27,6 +34,9 @@ function App() {
         )}
         {selectedTab === 2 && (
           <ViewProduct />
+        )}
+        {selectedTab === 3 && (
+          <ProductOutput />
         )}
       </div>
     </div>

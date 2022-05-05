@@ -2,10 +2,9 @@ import { useEffect, useState } from "react";
 import { useProductStock } from "../contexts/ProductStockContext";
 
 export default function ProductRegister() {
-
-  const [barcode, setBarcode] = useState('');
-  const [description, setDescription] = useState('');
-  const [localization, setLocalization] = useState('');
+  const [barcode, setBarcode] = useState("");
+  const [description, setDescription] = useState("");
+  const [localization, setLocalization] = useState("");
   const [quantity, setQuantity] = useState(1);
 
   const { addProduct, error, success } = useProductStock();
@@ -17,10 +16,11 @@ export default function ProductRegister() {
   };
 
   const resetForm = () => {
-    setBarcode('');
-    setDescription('');
-    setQuantity('');
-  }
+    setBarcode("");
+    setDescription("");
+    setLocalization("");
+    setQuantity("");
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -28,11 +28,11 @@ export default function ProductRegister() {
       barcode,
       description,
       localization,
-      quantity
-    }
+      quantity,
+    };
     addProduct(newProduct);
     resetForm();
-  }
+  };
 
   return (
     <div className="flex flex-col items-center w-full sm:w-8/12 lg:w-6/12">
@@ -77,51 +77,60 @@ export default function ProductRegister() {
             required
           />
         </div>
-        <div className="mt-3 w-full">
-          <label
-            htmlFor="localization"
-            className="block mb-1 text-sm font-medium text-gray-500"
-          >
-            Localização
-          </label>
-          <input
-            type="text"
-            id="localization"
-            value={localization}
-            name="localization"
-            autoComplete="off"
-            onChange={(e) => setLocalization(e.target.value)}
-            className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-sky-500
+        <div className="mt-3 w-full flex items-center gap-2">
+          <div className="flex-1">
+            <label
+              htmlFor="localization"
+              className="block mb-1 text-sm font-medium text-gray-500"
+            >
+              Localização
+            </label>
+            <input
+              type="text"
+              id="localization"
+              value={localization}
+              name="localization"
+              autoComplete="off"
+              onChange={(e) => setLocalization(e.target.value)}
+              className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-sky-500
             focus:border-sky-500 block w-full p-2.5 focus:outline-none text-center"
-            required
-          />
-        </div>
-        <div className="mt-3 w-full">
-          <label
-            htmlFor="quantity"
-            className="block mb-1 text-sm font-medium text-gray-500"
-          >
-            Quantidade
-          </label>
-          <input
-            type="number"
-            min={1}
-            value={quantity}
-            id="quantity"
-            name="quantity"
-            autoComplete="off"
-            onChange={(e) => setQuantity(e.target.value)}
-            className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-sky-500
-            focus:border-sky-500 block w-full p-2.5 focus:outline-none text-center"
-            required
-          />
+              required
+            />
+          </div>
+          <div className="w-28">
+            <label
+              htmlFor="quantity"
+              className="block mb-1 text-sm font-medium text-gray-500"
+            >
+              Quantidade
+            </label>
+            <input
+              type="number"
+              min={1}
+              value={quantity}
+              id="quantity"
+              name="quantity"
+              autoComplete="off"
+              onChange={(e) => setQuantity(e.target.value)}
+              className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900
+                text-sm rounded-lg focus:ring-sky-500 focus:border-sky-500 block
+                w-full p-2.5 focus:outline-none text-center"
+              required
+            />
+          </div>
         </div>
         <div className="mt-4 w-full flex justify-center">
-          <button className="px-4 py-2 bg-sky-500 text-white hover:bg-sky-400 rounded w-6/12 transition-all">Cadastrar</button>
+          <button className="px-4 py-2 bg-sky-500 text-white hover:bg-sky-400 rounded w-6/12 transition-all">
+            Cadastrar
+          </button>
         </div>
       </form>
-      {error.length > 0 && <p className="text-gray-500 text-center mt-6">{error}</p>}
-      {success.length > 0 && <p className="text-gray-500 text-center mt-6">{success}</p>}
+      {error.length > 0 && (
+        <p className="text-gray-500 text-center mt-6">{error}</p>
+      )}
+      {success.length > 0 && (
+        <p className="text-gray-500 text-center mt-6">{success}</p>
+      )}
     </div>
   );
 }
