@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useProductStock } from "../contexts/ProductStockContext";
 import ProductDetail from "./ProductDetail";
 
@@ -6,6 +6,7 @@ export default function ViewProduct() {
 
   const [barcode, setBarcode] = useState('');
   const [showData, setShowData] = useState(false);
+  const barcodeRef = useRef();
 
   const { setError, setSuccess } = useProductStock();
 
@@ -27,8 +28,13 @@ export default function ViewProduct() {
       e.preventDefault();
     }
   };
+
+  const focusBarcodeInput = () => {
+    barcodeRef.current.focus();
+  }
+
   return (
-    <div className="flex flex-col items-center w-full sm:w-8/12 lg:w-6/12">
+    <div className="flex flex-col items-center w-full sm:w-8/12 lg:w-6/12 min-h-[80vh]" onClick={focusBarcodeInput}>
       <div className="mt-6 w-full">
         <label
           htmlFor="barcode"
@@ -39,6 +45,7 @@ export default function ViewProduct() {
         <input
           type="text"
           id="barcode"
+          ref={barcodeRef}
           value={barcode}
           autoFocus
           name="barcode"

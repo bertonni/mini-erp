@@ -53,7 +53,7 @@ export default function ProductRegister() {
             autoComplete="off"
             onChange={(e) => setBarcode(e.target.value)}
             onKeyDown={(e) => handleKeyDown(e)}
-            className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-sky-500
+            className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-sky-500
           focus:border-sky-500 block w-full p-2.5 focus:outline-none text-center"
             required
           />
@@ -72,7 +72,7 @@ export default function ProductRegister() {
             name="description"
             autoComplete="off"
             onChange={(e) => setDescription(e.target.value)}
-            className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-sky-500
+            className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-sky-500
             focus:border-sky-500 block w-full p-2.5 focus:outline-none text-center"
             required
           />
@@ -92,7 +92,7 @@ export default function ProductRegister() {
               name="localization"
               autoComplete="off"
               onChange={(e) => setLocalization(e.target.value)}
-              className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-sky-500
+              className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-sky-500
             focus:border-sky-500 block w-full p-2.5 focus:outline-none text-center"
               required
             />
@@ -113,7 +113,7 @@ export default function ProductRegister() {
               autoComplete="off"
               onChange={(e) => setQuantity(e.target.value)}
               className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900
-                text-sm rounded-lg focus:ring-sky-500 focus:border-sky-500 block
+                text-sm rounded-md focus:ring-sky-500 focus:border-sky-500 block
                 w-full p-2.5 focus:outline-none text-center"
               required
             />

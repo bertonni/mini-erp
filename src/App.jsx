@@ -19,7 +19,7 @@ function App() {
           className={`transition-all px-4 py-1 border-b-2 ${selectedTab === 2 ? 'border-sky-400' : 'border-transparent'}`}
           onClick={() => setSelectedTab(2)}
         >
-          Visualizar
+          Consultar
         </button>
         <button
           className={`transition-all px-4 py-1 border-b-2 ${selectedTab === 3 ? 'border-sky-400' : 'border-transparent'}`}

@@ -1,23 +1,27 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useProductStock } from '../contexts/ProductStockContext';
 
 export default function ProductOutput() {
 
   const [barcode, setBarcode] = useState('');
   const [showData, setShowData] = useState(false);
+  const [searchedProduct, setSearchedProduct] = useState('');
+  const barcodeRef = useRef();
 
   const { setError, setSuccess } = useProductStock();
 
   useEffect(() => {
     setError("");
     setSuccess("");
-  }, [])
+  }, []);
 
   useEffect(() => {
     if (barcode.length === 0) setShowData(false);
   }, [barcode]);
 
   const handleKeyDown = (e) => {
+    if (e.code === 'F3' || e.code === 'F2') e.preventDefault();
+
     if (e.code === "ControlLeft" || e.code === "KeyJ" || e.code === "Enter") {
       if (e.code === "KeyJ" || e.code === "Enter") {
         setShowData(true);
@@ -27,8 +31,12 @@ export default function ProductOutput() {
     }
   };
 
+  const focusBarcodeInput = () => {
+    barcodeRef.current.focus();
+  }
+
   return (
-    <div className="flex flex-col items-center w-full sm:w-8/12 lg:w-6/12">
+    <div className="flex flex-col items-center w-full sm:w-8/12 lg:w-6/12 min-h-[80vh]" onClick={focusBarcodeInput}>
       <div className="mt-6 w-full">
         <label
           htmlFor="barcode"
@@ -41,6 +49,7 @@ export default function ProductOutput() {
           id="barcode"
           value={barcode}
           autoFocus
+          ref={barcodeRef}
           name="barcode"
           autoComplete="off"
           onChange={(e) => setBarcode(e.target.value)}
