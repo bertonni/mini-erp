@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useProductStock } from "../contexts/ProductStockContext";
 
 export default function ProductRegister() {
@@ -7,7 +7,9 @@ export default function ProductRegister() {
   const [localization, setLocalization] = useState("");
   const [quantity, setQuantity] = useState(1);
 
-  const { addProduct, error, success } = useProductStock();
+  const { stock, addProduct, error, success } = useProductStock();
+
+  const barcodeRef = useRef(null);
 
   const handleKeyDown = (e) => {
     if (e.code === "ControlLeft" || e.code === "KeyJ" || e.code === "Enter") {
@@ -20,6 +22,7 @@ export default function ProductRegister() {
     setDescription("");
     setLocalization("");
     setQuantity("");
+    barcodeRef.current.focus();
   };
 
   const handleSubmit = (e) => {
@@ -45,6 +48,7 @@ export default function ProductRegister() {
             Código de Barras
           </label>
           <input
+            ref={barcodeRef}
             type="text"
             id="barcode"
             value={barcode}
@@ -53,7 +57,7 @@ export default function ProductRegister() {
             autoComplete="off"
             onChange={(e) => setBarcode(e.target.value)}
             onKeyDown={(e) => handleKeyDown(e)}
-            className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-sky-500
+            className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded focus:ring-sky-500
           focus:border-sky-500 block w-full p-2.5 focus:outline-none text-center"
             required
           />
@@ -72,7 +76,7 @@ export default function ProductRegister() {
             name="description"
             autoComplete="off"
             onChange={(e) => setDescription(e.target.value)}
-            className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-sky-500
+            className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded focus:ring-sky-500
             focus:border-sky-500 block w-full p-2.5 focus:outline-none text-center"
             required
           />
@@ -92,7 +96,7 @@ export default function ProductRegister() {
               name="localization"
               autoComplete="off"
               onChange={(e) => setLocalization(e.target.value)}
-              className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-sky-500
+              className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded focus:ring-sky-500
             focus:border-sky-500 block w-full p-2.5 focus:outline-none text-center"
               required
             />
@@ -111,9 +115,9 @@ export default function ProductRegister() {
               id="quantity"
               name="quantity"
               autoComplete="off"
-              onChange={(e) => setQuantity(e.target.value)}
+              onChange={(e) => setQuantity(parseInt(e.target.value))}
               className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900
-                text-sm rounded-md focus:ring-sky-500 focus:border-sky-500 block
+                text-sm rounded focus:ring-sky-500 focus:border-sky-500 block
                 w-full p-2.5 focus:outline-none text-center"
               required
             />

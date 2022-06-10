@@ -5,6 +5,7 @@ export default function ProductOutput() {
 
   const [barcode, setBarcode] = useState('');
   const [showData, setShowData] = useState(false);
+  const [outputProducts, setOutputProducts] = useState([]);
   const [searchedProduct, setSearchedProduct] = useState('');
   const barcodeRef = useRef();
 

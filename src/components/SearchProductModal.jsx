@@ -1,8 +1,7 @@
-import React, { useState } from 'react'
+import React, { useState } from "react";
 
 export default function SearchProductModal() {
-
-  const [barcode, setBarcode] = useState('');
+  const [barcode, setBarcode] = useState("");
 
   return (
     <div className="flex flex-col items-center w-full sm:w-8/12 lg:w-6/12">
@@ -27,9 +26,8 @@ export default function SearchProductModal() {
           required
         />
       </div>
-      {/* {showData &&
-        <ProductDetail barcode={barcode} />
-      } */}
+      
+      {showData && <ProductDetail barcode={barcode} />}
     </div>
-  )
+  );
 }
