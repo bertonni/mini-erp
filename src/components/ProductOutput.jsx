@@ -1,13 +1,12 @@
-import React, { useEffect, useRef, useState } from 'react'
-import { useProductStock } from '../contexts/ProductStockContext';
-import ProductDetail from './ProductDetail';
+import React, { useEffect, useRef, useState } from "react";
+import { useProductStock } from "../contexts/ProductStockContext";
+import ProductOutputDetail from "./ProductOutputDetail";
 
 export default function ProductOutput() {
-
-  const [barcode, setBarcode] = useState('');
+  const [barcode, setBarcode] = useState("");
   const [showData, setShowData] = useState(false);
   const [outputProducts, setOutputProducts] = useState([]);
-  const [searchedProduct, setSearchedProduct] = useState('');
+  const [searchedProduct, setSearchedProduct] = useState("");
   const barcodeRef = useRef();
 
   const { setError, setSuccess, outputProduct } = useProductStock();
@@ -22,12 +21,12 @@ export default function ProductOutput() {
   }, [barcode]);
 
   const handleKeyDown = (e) => {
-    if (e.code === 'F3' || e.code === 'F2') e.preventDefault();
+    if (e.code === "F3" || e.code === "F2") e.preventDefault();
 
     if (e.code === "ControlLeft" || e.code === "KeyJ" || e.code === "Enter") {
       if (e.code === "KeyJ" || e.code === "Enter") {
         setShowData(true);
-        outputProduct(barcode, 1);
+        outputProduct(barcode);
         e.target.select();
       }
       e.preventDefault();
@@ -36,10 +35,13 @@ export default function ProductOutput() {
 
   const focusBarcodeInput = () => {
     barcodeRef.current.focus();
-  }
+  };
 
   return (
-    <div className="flex flex-col items-center w-full sm:w-8/12 lg:w-6/12 min-h-[80vh]" onClick={focusBarcodeInput}>
+    <div
+      className="flex flex-col items-center w-full sm:w-8/12 lg:w-6/12 min-h-[80vh]"
+      onClick={focusBarcodeInput}
+    >
       <div className="mt-6 w-full">
         <label
           htmlFor="barcode"
@@ -62,9 +64,7 @@ export default function ProductOutput() {
           required
         />
       </div>
-      {showData &&
-        <ProductDetail barcode={barcode} />
-      }
+      {showData && <ProductOutputDetail barcode={barcode} />}
     </div>
-  )
+  );
 }

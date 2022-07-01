@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import { useProductStock } from "../contexts/ProductStockContext";
 
 export default function ProductDetail({ barcode }) {
-  const [product, setProduct] = useState(null);
+  const [product, setProduct] = useState([]);
+  const [totalQuantity, setTotalQuantity] = useState(0);
   const { stock } = useProductStock();
 
   useEffect(() => {
@@ -10,18 +11,15 @@ export default function ProductDetail({ barcode }) {
 
     if (prod.length === 0) return;
 
+    setProduct(prod);
+
     let totalQuantity = 0;
 
     for (let i = 0; i < prod.length; i++) {
       totalQuantity += prod[i].quantity;
-      console.log(prod[i].quantity);
     }
 
-    console.log(prod.length);
-
-    const teste = Object.assign({}, prod[0]);
-    teste.quantity = totalQuantity;
-    setProduct(teste);
+    setTotalQuantity(totalQuantity);
   }, [barcode]);
 
   if (!product)
@@ -29,9 +27,19 @@ export default function ProductDetail({ barcode }) {
 
   return (
     <div className="mt-6 flex flex-col items-start">
-      <h1 className="text-gray-500 text-2xl">{product.description}</h1>
-      <h1 className="text-gray-500">{product.localization}</h1>
-      <p className="text-gray-500">Quantidade em Estoque: {product.quantity}</p>
+      {product.map((prod, index) => (
+        <div key={index}>
+          <h1 className="text-gray-500 text-2xl">{prod.description}</h1>
+          <h1 className="text-gray-500">{prod.localization}</h1>
+          <p className="text-gray-500">
+            Quantidade em Estoque: {prod.quantity}
+          </p>
+          <hr className="border-b-2 py-2" />
+        </div>
+      ))}
+      {product && (
+        <p className="text-gray-600 mt-4">Total em estoque: {totalQuantity}</p>
+      )}
     </div>
   );
 }
