@@ -8,19 +8,20 @@ export default function ProductDetail({ barcode }) {
   useEffect(() => {
     const prod = stock.filter((pro) => pro.barcode === barcode);
 
+    if (prod.length === 0) return;
+
     let totalQuantity = 0;
 
-    if (prod.length > 0) {
-      for (let i = 0; i < prod.length; i++) {
-        totalQuantity += prod[i].quantity;
-        console.log(prod[i].quantity);
-      }
-
-      console.log(prod.length);
-
-      prod[0].quantity = totalQuantity;
-      setProduct(prod[0]);
+    for (let i = 0; i < prod.length; i++) {
+      totalQuantity += prod[i].quantity;
+      console.log(prod[i].quantity);
     }
+
+    console.log(prod.length);
+
+    const teste = Object.assign({}, prod[0]);
+    teste.quantity = totalQuantity;
+    setProduct(teste);
   }, [barcode]);
 
   if (!product)
@@ -29,6 +30,7 @@ export default function ProductDetail({ barcode }) {
   return (
     <div className="mt-6 flex flex-col items-start">
       <h1 className="text-gray-500 text-2xl">{product.description}</h1>
+      <h1 className="text-gray-500">{product.localization}</h1>
       <p className="text-gray-500">Quantidade em Estoque: {product.quantity}</p>
     </div>
   );

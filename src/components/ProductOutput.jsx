@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useProductStock } from '../contexts/ProductStockContext';
+import ProductDetail from './ProductDetail';
 
 export default function ProductOutput() {
 
@@ -9,7 +10,7 @@ export default function ProductOutput() {
   const [searchedProduct, setSearchedProduct] = useState('');
   const barcodeRef = useRef();
 
-  const { setError, setSuccess } = useProductStock();
+  const { setError, setSuccess, outputProduct } = useProductStock();
 
   useEffect(() => {
     setError("");
@@ -26,6 +27,7 @@ export default function ProductOutput() {
     if (e.code === "ControlLeft" || e.code === "KeyJ" || e.code === "Enter") {
       if (e.code === "KeyJ" || e.code === "Enter") {
         setShowData(true);
+        outputProduct(barcode, 1);
         e.target.select();
       }
       e.preventDefault();
@@ -60,9 +62,9 @@ export default function ProductOutput() {
           required
         />
       </div>
-      {/* {showData &&
+      {showData &&
         <ProductDetail barcode={barcode} />
-      } */}
+      }
     </div>
   )
 }
