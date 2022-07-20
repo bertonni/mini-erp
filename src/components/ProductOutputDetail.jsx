@@ -3,7 +3,7 @@ import { useProductStock } from "../contexts/ProductStockContext";
 
 export default function ProductOutputDetail({ barcode, quantity = 1 }) {
   const [product, setProduct] = useState(null);
-  const { stock } = useProductStock();
+  const { stock  } = useProductStock();
 
   useEffect(() => {
     const prod = stock.filter((pro) => pro.barcode === barcode);
@@ -17,7 +17,7 @@ export default function ProductOutputDetail({ barcode, quantity = 1 }) {
     }
 
     const newProd = Object.assign({}, prod[0]);
-    newProd.quantity = totalQuantity;
+    newProd.quantity = quantity;
     setProduct(newProd);
   }, [barcode]);
 
@@ -27,7 +27,7 @@ export default function ProductOutputDetail({ barcode, quantity = 1 }) {
   return (
     <div className="mt-6 flex flex-col items-start">
       <h1 className="text-gray-500 text-2xl">{product.description}</h1>
-      <p className="text-gray-500">Quantidade: {quantity}</p>
+      <p className="text-gray-500">Quantidade: {product.quantity}</p>
     </div>
   );
 }

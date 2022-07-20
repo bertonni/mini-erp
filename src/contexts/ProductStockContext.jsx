@@ -47,7 +47,8 @@ export function ProductStockProvider({ children }) {
   };
 
   const outputProduct = (barcode, quantity = 1) => {
-    const product = stock.filter((prod) => prod.barcode === barcode);
+    const prod = stock.filter((prod) => prod.barcode === barcode);
+    const product = Array.from(prod);
 
     let totalQuantity = 0;
 
@@ -56,23 +57,32 @@ export function ProductStockProvider({ children }) {
     }
 
     if (quantity > totalQuantity) {
-      setError("Não há quantidade suficiente no estoque");
+      setError(`Não há quantidade suficiente no estoque. Total em estoque: ${totalQuantity}`);
       return;
     }
 
     const indexes = [];
 
     if (product.length > 0) {
+      let updated = false;
+
       for (let i = 0; i < product.length; i++) {
-        console.log(product[i]);
-        if (quantity > product[i].quantity) {
+        if (updated) break;
+        if (quantity >= product[i].quantity) {
           quantity = parseInt(quantity) - product[i].quantity;
+          indexes.push(product[i].localization);
           product[i].quantity = 0;
+          updated = true;
         } else {
           product[i].quantity = product[i].quantity - parseInt(quantity);
+          updated = true;
         }
       }
     }
+
+    const updated = stock.filter((prod) => prod.quantity !== 0);
+
+    setStock(updated);
   };
 
   const memoedValues = useMemo(
