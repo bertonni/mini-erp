@@ -35,6 +35,8 @@ export default function ProductOutput() {
       if (e.code === "KeyJ" || e.code === "Enter") {
         setShowData(true);
         outputProduct(barcode, quantity);
+        setQuantity(1);
+        setErrorMessage(null);
         e.target.select();
       }
       e.preventDefault();
@@ -111,8 +113,8 @@ export default function ProductOutput() {
           </form>
         </div>
       }
-      {showData && !error && <ProductOutputDetail barcode={barcode} quantity={quantity} />}
-      {errorMessage && <p className="text-gray-500">{errorMessage}</p>}
+      {showData && !errorMessage && <ProductOutputDetail barcode={barcode} quantity={quantity} />}
+      {errorMessage && <p className="text-gray-500 mt-4">{errorMessage}</p>}
     </div>
   );
 }
