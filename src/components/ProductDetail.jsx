@@ -26,15 +26,15 @@ export default function ProductDetail({ barcode }) {
     return <p className="mt-6 text-gray-500">Produto não encontrado</p>;
 
   return (
-    <div className="mt-6 flex flex-col items-start">
+    <div className="mt-6 flex flex-col items-start w-fit">
       {product.map((prod, index) => (
-        <div key={index}>
-          <h1 className="text-gray-500 text-2xl">{prod.description}</h1>
-          <h1 className="text-gray-500">{prod.localization}</h1>
+        <div key={index} className="mt-4 w-full">
+          <h1 className="text-gray-500 text-2xl"><b>Produto:</b> {prod.description}</h1>
+          <h1 className="text-gray-500"><b>Localização:</b> {prod.localization}</h1>
           <p className="text-gray-500">
-            Quantidade em Estoque: {prod.quantity}
+            <b>Quantidade:</b> {prod.quantity}
           </p>
-          <hr className="border-b-2 py-2" />
+          <hr className="border-b-2 mt-1" />
         </div>
       ))}
       {product && (

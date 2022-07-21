@@ -18,7 +18,6 @@ export function ProductStockProvider({ children }) {
         prod.localization === product.localization
     )[0];
 
-    console.log(currProduct);
     const stockCopy = Array.from(stock);
 
     product.quantity = parseInt(product.quantity);
