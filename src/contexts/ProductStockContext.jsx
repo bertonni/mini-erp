@@ -45,9 +45,10 @@ export function ProductStockProvider({ children }) {
     console.log(localStorage.getItem("stock"));
   };
 
-  const outputProduct = (barcode, quantity = 1) => {
+  const finishOutput = (products) => {
     const prod = stock.filter((prod) => prod.barcode === barcode);
     const product = Array.from(prod);
+    const currProduct = Object.assign({}, product[0]);
 
     let totalQuantity = 0;
 
@@ -92,7 +93,7 @@ export function ProductStockProvider({ children }) {
       setError,
       setSuccess,
       addProduct,
-      outputProduct,
+      finishOutput,
     }),
     [stock, error, success]
   );

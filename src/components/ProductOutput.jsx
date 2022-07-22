@@ -8,22 +8,14 @@ export default function ProductOutput() {
   const [showData, setShowData] = useState(false);
   const [showQuantity, setShowQuantity] = useState(false);
   const [outputProducts, setOutputProducts] = useState([]);
-  const [searchedProduct, setSearchedProduct] = useState("");
   const barcodeRef = useRef();
   const [errorMessage, setErrorMessage] = useState(null);
 
-  const { error, setError, outputProduct } = useProductStock();
+  const { finishOutput, stock } = useProductStock();
 
   useEffect(() => {
     if (barcode.length === 0) setShowData(false);
   }, [barcode]);
-
-  useEffect(() => {
-    if (error) {
-      setErrorMessage(error);
-      setError("");
-    }
-  }, [error]);
 
   const handleKeyDown = (e) => {
     if (e.code === "F3" || e.code === "F2") {
@@ -43,6 +35,40 @@ export default function ProductOutput() {
     }
   };
 
+  const outputProduct = (barcode, quantity) => {
+    const prod = stock.filter((prod) => prod.barcode === barcode);
+    const product = Array.from(prod);
+
+    let totalQuantity = 0;
+
+    for (let i = 0; i < product.length; i++) {
+      totalQuantity += product[i].quantity;
+    }
+
+    if (quantity > totalQuantity) {
+      setErrorMessage(`Não há quantidade suficiente no estoque. Total em estoque: ${totalQuantity}`);
+      return;
+    }
+
+    if (product.length > 0) {
+
+      for (let i = 0; i < product.length; i++) {
+        if (quantity >= product[i].quantity) {
+          quantity = parseInt(quantity) - product[i].quantity;
+          const copy = Object.assign({}, product[i]);
+          copy.quantity = quantity;
+          setOutputProducts([...outputProducts, copy]);
+          product[i].quantity = 0;
+        } else {
+          const copy = Object.assign({}, product[i]);
+          copy.quantity = quantity;
+          product[i].quantity = product[i].quantity - parseInt(quantity);
+          setOutputProducts([...outputProducts, copy]);
+        }
+      }
+    }
+  };
+
   const focusBarcodeInput = () => {
     barcodeRef.current.focus();
   };
@@ -53,6 +79,11 @@ export default function ProductOutput() {
 
     setShowQuantity(false);
     barcodeRef.current.focus();
+  };
+
+  const handleFormSubmit = (e) => {
+    e.preventDefault();
+    finishOutput(outputProducts);
   }
 
   return (
@@ -82,7 +113,7 @@ export default function ProductOutput() {
           required
         />
       </div>
-      {showQuantity && 
+      {showQuantity &&
         <div className="fixed bg-black w-screen h-screen inset-0 flex items-center justify-center
           bg-opacity-50"
           onClick={() => setShowQuantity(false)}
@@ -115,6 +146,25 @@ export default function ProductOutput() {
       }
       {showData && !errorMessage && <ProductOutputDetail barcode={barcode} quantity={quantity} />}
       {errorMessage && <p className="text-gray-500 mt-4">{errorMessage}</p>}
+
+      <form onSubmit={(e) => handleFormSubmit(e)} className="w-full flex flex-col items-center gap-2">
+        {outputProducts.map((output, index) => (
+          <div className="flex items-center justify-between border-b mt-2 w-full" key={index}>
+            <div className="flex items-center flex-col justify-center w-full">
+              <span className="text-gray-600 font-semibold">Qtd</span>
+              <span className="text-gray-600 text-lg">{output.quantity}</span>
+            </div>
+            <div className="flex flex-col justify-center w-full">
+              <span className="text-gray-600 font-semibold">Produto</span>
+              <span className="text-gray-600 text-lg">{output.description}</span>
+            </div>
+          </div>
+        ))}
+
+        {outputProducts.length > 0 &&
+          <input type="submit" className="px-4 py-2 rounded bg-sky-500 text-gray-50 mt-6 cursor-pointer hover:bg-sky-400" value={"Finalizar Saída"} />
+        }
+      </form>
     </div>
   );
 }
