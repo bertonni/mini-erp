@@ -1,17 +1,18 @@
-import { useEffect, useRef, useState } from "react";
+import { FormEvent, KeyboardEvent, useEffect, useRef, useState } from "react";
+import { IProduct } from "../@types/types";
 import { useProductStock } from "../contexts/ProductStockContext";
 
 export default function ProductRegister() {
-  const [barcode, setBarcode] = useState("");
-  const [description, setDescription] = useState("");
-  const [localization, setLocalization] = useState("");
-  const [quantity, setQuantity] = useState(1);
+  const [barcode, setBarcode] = useState<string>("");
+  const [description, setDescription] = useState<string>("");
+  const [localization, setLocalization] = useState<string>("");
+  const [quantity, setQuantity] = useState<number>(1);
 
   const { stock, addProduct, error, success } = useProductStock();
 
   const barcodeRef = useRef(null);
 
-  const handleKeyDown = (e) => {
+  const handleKeyDown = (e: KeyboardEvent) => {
     if (e.code === "ControlLeft" || e.code === "KeyJ" || e.code === "Enter") {
       e.preventDefault();
     }
@@ -21,13 +22,13 @@ export default function ProductRegister() {
     setBarcode("");
     setDescription("");
     setLocalization("");
-    setQuantity("");
+    setQuantity(0);
     barcodeRef.current.focus();
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const newProduct = {
+    const newProduct: IProduct = {
       barcode,
       description,
       localization,
@@ -95,9 +96,9 @@ export default function ProductRegister() {
               value={localization}
               name="localization"
               autoComplete="off"
-              onChange={(e) => setLocalization(e.target.value)}
+              onChange={(e) => setLocalization(e.target.value.toUpperCase())}
               className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded focus:ring-sky-500
-            focus:border-sky-500 block w-full p-2.5 focus:outline-none text-center"
+            focus:border-sky-500 block w-full p-2.5 focus:outline-none text-center uppercase"
               required
             />
           </div>

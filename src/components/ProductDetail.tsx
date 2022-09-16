@@ -1,16 +1,23 @@
 import { useEffect, useState } from "react";
+import { IProduct } from "../@types/types";
 import { useProductStock } from "../contexts/ProductStockContext";
 
-export default function ProductDetail({ barcode }) {
-  const [product, setProduct] = useState([]);
+export default function ProductDetail({ barcode, description }) {
+  const [product, setProduct] = useState(null);
   const [totalQuantity, setTotalQuantity] = useState(0);
   const { stock } = useProductStock();
 
   useEffect(() => {
-    const prod = stock.filter((pro) => pro.barcode === barcode);
-
-    if (prod.length === 0) return;
-
+    let prod:IProduct[];
+    if (barcode.length > 0) {
+      prod = stock.filter((pro:IProduct) => pro.barcode === barcode);
+    } else if (description.length > 0) {
+      prod = stock.filter((pro:IProduct) => pro.description.toLowerCase().includes(description));
+    }
+    if (prod.length === 0) {
+      setProduct(null);
+      return;
+    }
     setProduct(prod);
 
     let totalQuantity = 0;
@@ -20,14 +27,14 @@ export default function ProductDetail({ barcode }) {
     }
 
     setTotalQuantity(totalQuantity);
-  }, [barcode]);
+  }, [barcode, description]);
 
   if (!product)
     return <p className="mt-6 text-gray-500">Produto não encontrado</p>;
 
   return (
     <div className="mt-6 flex flex-col items-start w-fit">
-      {product.map((prod, index) => (
+      {product.map((prod: IProduct, index: number) => (
         <div key={index} className="mt-4 w-full">
           <h1 className="text-gray-500 text-2xl"><b>Produto:</b> {prod.description}</h1>
           <h1 className="text-gray-500"><b>Localização:</b> {prod.localization}</h1>

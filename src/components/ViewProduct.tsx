@@ -1,13 +1,16 @@
-import React, { useEffect, useRef, useState } from "react";
+import { KeyboardEvent, useEffect, useRef, useState } from "react";
 import { useProductStock } from "../contexts/ProductStockContext";
 import ProductDetail from "./ProductDetail";
 
 export default function ViewProduct() {
-  const [barcode, setBarcode] = useState("");
-  const [showData, setShowData] = useState(false);
-  const [description, setDescription] = useState("");
+  const [barcode, setBarcode] = useState<string>("");
+  const [currBarcode, setCurrBarcode] = useState<string>("");
+  const [showData, setShowData] = useState<boolean>(false);
+  const [description, setDescription] = useState<string>("");
+  const [currDescription, setCurrDescription] = useState<string>("");
 
-  const barcodeRef = useRef();
+  const barcodeRef = useRef<HTMLInputElement>();
+  const descriptionRef = useRef<HTMLInputElement>();
 
   const { setError, setSuccess } = useProductStock();
 
@@ -20,12 +23,15 @@ export default function ViewProduct() {
     if (barcode.length === 0) setShowData(false);
   }, [barcode]);
 
-  const handleKeyDown = (e) => {
+  const handleKeyDown = (e: KeyboardEvent) => {
     if (e.code === "ControlLeft" || e.code === "KeyJ" || e.code === "Enter") {
       e.preventDefault();
       if (e.code === "KeyJ" || e.code === "Enter") {
+        const target = e.target as HTMLInputElement;
         setShowData(true);
-        e.target.select();
+        setCurrBarcode(barcodeRef.current.value);
+        setCurrDescription(descriptionRef.current.value);
+        target.select();
         return;
       }
       setShowData(false);
@@ -58,7 +64,7 @@ export default function ViewProduct() {
           name="barcode"
           autoComplete="off"
           onChange={(e) => setBarcode(e.target.value)}
-          onKeyDown={(e) => handleKeyDown(e)}
+          onKeyDown={handleKeyDown}
           className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-sky-500
         focus:border-sky-500 block w-full p-2.5 focus:outline-none text-center select-all"
           required
@@ -74,18 +80,19 @@ export default function ViewProduct() {
         <input
           type="text"
           id="description"
+          ref={descriptionRef}
           value={description}
           name="description"
           autoComplete="off"
           onFocus={(e) => e.stopPropagation()}
           onChange={(e) => setDescription(e.target.value)}
-          onKeyDown={(e) => handleKeyDown(e)}
+          onKeyDown={handleKeyDown}
           className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-sky-500
         focus:border-sky-500 block w-full p-2.5 focus:outline-none text-center select-all"
           required
         />
       </div>
-      {showData && <ProductDetail barcode={barcode} />}
+      {showData && <ProductDetail barcode={currBarcode} description={currDescription} />}
     </div>
   );
 }
