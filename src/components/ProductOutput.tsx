@@ -2,7 +2,6 @@ import { FormEvent, KeyboardEvent, useEffect, useRef, useState } from "react";
 import { IProduct } from "../@types/types";
 import { useProductStock } from "../contexts/ProductStockContext";
 import CurrentProductOutput from "./CurrentProductOutput";
-import ProductOutputDetail from "./ProductOutputDetail";
 import SelectQuantityModal from "./SelectQuantityModal";
 
 export default function ProductOutput() {
@@ -14,8 +13,9 @@ export default function ProductOutput() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const barcodeRef = useRef<HTMLInputElement>(null);
   const quantityRef = useRef<HTMLInputElement>(null);
-
+  
   const { finishOutput, stock, success, setSuccess } = useProductStock();
+  const [stockCopy] = useState<IProduct[]>(stock);
 
   useEffect(() => {
     if (success.length > 0) {
@@ -42,7 +42,8 @@ export default function ProductOutput() {
   };
 
   const outputProduct = (barcode: string, quantity: number) => {
-    const prod: IProduct[] = Array.from(stock.filter(
+
+    const prod: IProduct[] = Array.from(stockCopy.filter(
       (prod: IProduct) => prod.barcode === barcode
     ));
     const product: IProduct[] = Array.from(prod);
@@ -159,7 +160,7 @@ export default function ProductOutput() {
           >
             <div className="flex items-center w-full gap-4">
               <span className="text-gray-600 text-lg w-14 text-center">
-                {output.quantity}
+                {quantity}
               </span>
               <span className="text-gray-600 text-lg flex-1">
                 {output.description}
