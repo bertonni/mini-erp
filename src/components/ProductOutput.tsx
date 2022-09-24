@@ -2,6 +2,7 @@ import { FormEvent, KeyboardEvent, useEffect, useRef, useState } from "react";
 import { IProduct } from "../@types/types";
 import { useProductStock } from "../contexts/ProductStockContext";
 import CurrentProductOutput from "./CurrentProductOutput";
+import ProductOutputList from "./ProductOutputList";
 import SelectQuantityModal from "./SelectQuantityModal";
 
 export default function ProductOutput() {
@@ -13,15 +14,10 @@ export default function ProductOutput() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const barcodeRef = useRef<HTMLInputElement>(null);
   const quantityRef = useRef<HTMLInputElement>(null);
-  
-  const { finishOutput, stock, success, setSuccess } = useProductStock();
-  const [stockCopy] = useState<IProduct[]>(stock);
 
-  useEffect(() => {
-    if (success.length > 0) {
-      setTimeout(() => setSuccess(''), 2000);
-    }
-  }, []);
+  const { finishOutput, stock, success, setSuccess, getTotalInStock } =
+    useProductStock();
+  const [stockCopy] = useState<IProduct[]>(stock);
 
   const handleKeyDown = (e: KeyboardEvent) => {
     if (e.code === "F3" || e.code === "F2") {
@@ -34,7 +30,8 @@ export default function ProductOutput() {
         const target = e.target as HTMLInputElement;
         setCurrentBarcode(barcode);
         outputProduct(barcode, quantity);
-
+        setBarcode("");
+        setQuantity(1);
         target.select();
       }
       e.preventDefault();
@@ -42,50 +39,56 @@ export default function ProductOutput() {
   };
 
   const outputProduct = (barcode: string, quantity: number) => {
-
-    const prod: IProduct[] = Array.from(stockCopy.filter(
-      (prod: IProduct) => prod.barcode === barcode
-    ));
-    const product: IProduct[] = Array.from(prod);
-
-    let totalQuantity: number = 0;
-
-    for (let i = 0; i < product.length; i++) {
-      totalQuantity += product[i].quantity;
-    }
+    const product: IProduct[] = stockCopy.filter((prod: IProduct) => prod.barcode === barcode);
 
     if (product.length === 0) {
-      setErrorMessage(`Produto não encontrado`);
+      setErrorMessage(`Produto não cadastrado`);
       return;
     }
 
-    if (quantity > totalQuantity) {
+    let totalQuantity: number = quantity;
+    let totalInStock: number = getTotalInStock(barcode);
+
+    for (let i = 0; i < outputProducts.length; i++) {
+      if (outputProducts[i].barcode === barcode)
+        totalQuantity += outputProducts[i].quantity;
+    }
+
+    if (totalQuantity > totalInStock) {
       setErrorMessage(
-        `Não há quantidade suficiente no estoque. Total em estoque: ${totalQuantity}`
+        `Não há quantidade suficiente no estoque. Total em estoque: ${totalInStock}`
       );
       return;
     }
 
-    setErrorMessage(null);
+    const productIsInOutput: IProduct[] = outputProducts.filter(
+      (prod: IProduct) => prod.barcode === barcode
+    );
 
-    if (product.length > 0) {
-      for (let i = 0; i < product.length; i++) {
-        if (quantity >= product[i].quantity) {
-          quantity = quantity - product[i].quantity;
-          const copy = Object.assign({}, product[i]);
-          copy.quantity = quantity;
-          setOutputProducts([...outputProducts, copy]);
-          product[i].quantity = 0;
-          continue;
-        } else {
-          const copy = Object.assign({}, product[i]);
-          copy.quantity = quantity;
-          product[i].quantity -= quantity;
-          setOutputProducts([...outputProducts, copy]);
+    if (productIsInOutput.length > 0) {
+      for (let i = 0; i < outputProducts.length; i++) {
+        if (outputProducts[i].barcode === barcode) {
+          outputProducts[i].quantity += quantity;
           break;
         }
       }
+      setOutputProducts(outputProducts);
+    } else {
+      const product: IProduct = Object.assign(
+        stockCopy.filter((prod: IProduct) => prod.barcode === barcode)[0]
+      );
+      const copy: IProduct = {
+        quantity: quantity,
+        description: product.description,
+        barcode: product.barcode,
+        localization: "",
+      };
+      copy.quantity = quantity;
+      setOutputProducts([...outputProducts, copy]);
     }
+
+    setErrorMessage(null);
+    console.log(outputProducts);
   };
 
   const focusBarcodeInput = () => {
@@ -101,9 +104,15 @@ export default function ProductOutput() {
     barcodeRef.current.focus();
   };
 
-  const handleFormSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const handleFormSubmit = () => {
     finishOutput(outputProducts);
+    setErrorMessage("");
+    setQuantity(1);
+  };
+
+  const closeMessage = () => {
+    setSuccess("");
+    setOutputProducts([]);
   };
 
   return (
@@ -135,49 +144,32 @@ export default function ProductOutput() {
         />
       </div>
       {showQuantity && (
-        <SelectQuantityModal setShow={setShowQuantity} handleSubmit={handleSubmit} quantityRef={quantityRef} />
+        <SelectQuantityModal
+          setShow={setShowQuantity}
+          handleSubmit={handleSubmit}
+          quantityRef={quantityRef}
+        />
       )}
       {errorMessage !== null && (
         <p className="text-gray-500 mt-4">{errorMessage}</p>
       )}
-
-      <form
-        onSubmit={(e) => handleFormSubmit(e)}
-        className="w-full flex flex-col items-center gap-2 mt-10"
-      >
-        {outputProducts.length > 0 && success.length === 0 && (
-          <div className="flex items-center w-full gap-4">
-            <span className="text-gray-600 font-semibold text-center w-14">
-              Qtd
-            </span>
-            <span className="text-gray-600 font-semibold flex-1">Produto</span>
-          </div>
-        )}
-        {success.length === 0 && outputProducts.map((output, index) => (
-          <div
-            className="flex items-center justify-between border-b w-full"
-            key={index}
+      {success.length > 0 && (
+        <div className="flex items-center py-4 px-8 rounded border border-green-600
+          bg-green-100 relative mt-4 text-green-600">
+          <span
+            className="absolute right-1 top-0 cursor-pointer text-lg"
+            onClick={closeMessage}
           >
-            <div className="flex items-center w-full gap-4">
-              <span className="text-gray-600 text-lg w-14 text-center">
-                {quantity}
-              </span>
-              <span className="text-gray-600 text-lg flex-1">
-                {output.description}
-              </span>
-            </div>
-          </div>
-        ))}
-
-        {outputProducts.length > 0 && success.length === 0 && (
-          <input
-            type="submit"
-            className="px-4 py-2 rounded bg-sky-500 text-gray-50 mt-6 cursor-pointer hover:bg-sky-400"
-            value={"Finalizar Saída"}
-          />
-        )}
-        {success}
-      </form>
+            x
+          </span>
+          <p className="">{success}</p>
+        </div>
+      )}
+      <ProductOutputList
+        quantity={quantity}
+        outputProducts={outputProducts}
+        handleFinish={handleFormSubmit}
+      />
     </div>
   );
 }

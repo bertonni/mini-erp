@@ -7,7 +7,7 @@ import {
   FC,
   PropsWithChildren,
 } from "react";
-import { IProduct, ProductContextType } from "../@types/types";
+import { IProduct, IuseLocalStorage, ProductContextType } from "../@types/types";
 import useLocalStorage from "../hooks/useLocalStorage";
 
 const ProductStockContext = createContext<ProductContextType | null>(null);
@@ -16,8 +16,8 @@ export const useProductStock = () => {
   return useContext(ProductStockContext);
 };
 
-const ProductStockProvider: FC<PropsWithChildren> = ({ children }) => {
-  const [stock, setStock] = useLocalStorage("stock", []);
+const ProductStockProvider: FC<PropsWithChildren<ReactNode>> = ({ children }) => {
+  const [stock, setStock] = useLocalStorage({key: "stock", defaultValue: []});
   const [error, setError] = useState<string>("");
   const [success, setSuccess] = useState<string>("");
 
@@ -51,53 +51,50 @@ const ProductStockProvider: FC<PropsWithChildren> = ({ children }) => {
       setSuccess("Produto cadastrado com sucesso");
       setStock(stockCopy);
     }
-    console.log(localStorage.getItem("stock"));
   };
+
+  const getTotalInStock = (barcode: string) => {
+    let total: number = 0;
+
+    const product: IProduct[] = stock.filter((prod: IProduct) => prod.barcode === barcode);
+
+    for (let i = 0; i < product.length; i++) {
+      total += product[i].quantity;
+    }
+    return total;
+  }
 
   const finishOutput = (products: IProduct[]) => {
     const stockCopy: IProduct[] = Array.from(stock);
-    console.log(products);
+
     for (let i = 0; i < products.length; i++) {
       const currProduct: IProduct = Object.assign({}, products[i]);
-      
+
       const currentIndex: number = stockCopy.findIndex(
         (prod: IProduct) =>
           prod.barcode === currProduct.barcode &&
-          prod.description === currProduct.description &&
-          prod.localization === currProduct.localization
+          prod.description === currProduct.description
       );
 
-      const prod: IProduct = stockCopy.filter(
+      const prod: IProduct[] = Array.from(stockCopy.filter(
         (prod: IProduct) =>
           prod.barcode === currProduct.barcode &&
-          prod.description === currProduct.description &&
-          prod.localization === currProduct.localization
-      )[0];
+          prod.description === currProduct.description
+      ));
 
-      // prod.quantity -= currProduct.quantity;
-      stockCopy[currentIndex] = prod;
+      let currQuant: number = currProduct.quantity;
+      for (let i = 0; i < prod.length; i++) {
+        if (currQuant > prod[i].quantity) {
+          currQuant -= prod[i].quantity;
+          prod[i].quantity = 0;
+        } else {
+          prod[i].quantity -= currQuant;
+          break;
+        }
+        stockCopy[currentIndex] = prod[i];
+      }
     }
-    setStock(stockCopy);
     setSuccess("Saída finalizada com sucesso");
-    // const indexes: string[] = [];
-
-    // if (product.length > 0) {
-    //   let updated = false;
-
-    //   for (let i = 0; i < product.length; i++) {
-    //     if (updated) break;
-    //     if (quantity >= product[i].quantity) {
-    //       quantity = quantity - product[i].quantity;
-    //       indexes.push(product[i].localization);
-    //       product[i].quantity = 0;
-    //       updated = true;
-    //     } else {
-    //       product[i].quantity = product[i].quantity - quantity;
-    //       updated = true;
-    //     }
-    //   }
-    // }
-
     const updated = stock.filter((prod: IProduct) => prod.quantity !== 0);
 
     setStock(updated);
@@ -112,6 +109,7 @@ const ProductStockProvider: FC<PropsWithChildren> = ({ children }) => {
       setSuccess,
       addProduct,
       finishOutput,
+      getTotalInStock,
     }),
     [stock, error, success]
   );

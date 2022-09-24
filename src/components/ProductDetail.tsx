@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import { IProduct } from "../@types/types";
+import { IProduct, IProductDetailProps } from "../@types/types";
 import { useProductStock } from "../contexts/ProductStockContext";
 
-export default function ProductDetail({ barcode, description }) {
+export default function ProductDetail({ barcode, description }: IProductDetailProps) {
   const [product, setProduct] = useState(null);
   const [totalQuantity, setTotalQuantity] = useState(0);
   const { stock } = useProductStock();
