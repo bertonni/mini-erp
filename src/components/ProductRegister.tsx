@@ -9,7 +9,7 @@ export default function ProductRegister() {
   const [quantity, setQuantity] = useState<number>(1);
   const [productAlreadyExists, setProductAlreadyExists] = useState<boolean>(false);
 
-  const { stock, addProduct, error, success } = useProductStock();
+  const { stock, addProduct, error, success, setSuccess } = useProductStock();
 
   const barcodeRef = useRef(null);
 
@@ -24,6 +24,10 @@ export default function ProductRegister() {
       }
       e.preventDefault();
     }
+  };
+
+  const closeMessage = () => {
+    setSuccess("");
   };
 
   const resetForm = () => {
@@ -144,7 +148,18 @@ export default function ProductRegister() {
         <p className="text-gray-500 text-center mt-6">{error}</p>
       )}
       {success.length > 0 && (
-        <p className="text-gray-500 text-center mt-6">{success}</p>
+        <div
+          className="flex items-center py-4 px-8 rounded border border-green-600
+          bg-green-100 relative mt-4 text-green-600"
+        >
+          <span
+            className="absolute right-1 top-0 cursor-pointer text-lg"
+            onClick={closeMessage}
+          >
+            x
+          </span>
+          <p className="">{success}</p>
+        </div>
       )}
     </div>
   );
